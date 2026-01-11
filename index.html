@@ -1,0 +1,3042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan Your Journey - Beckons</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <style>
+        @import url('https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/style.css');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Mono:wght@400;500&display=swap');
+
+        :root {
+            /* Primary Colors - from Figma */
+            --charcoal: #1D1D1D;
+            --limestone: #FFF9ED;
+            --vineyard-burgundy: #5F0002;
+            --vineyard-burgundy-dark: #4a0001;
+            --river-sand: #9B8676;
+            --off-white: #F6F4EB;
+
+            /* Alert/Semantic Colors - from Figma */
+            --success: #0f752c;
+            --warning: #FF832A;
+            --error: #DA1E27;
+
+            /* Neutral Colors */
+            --neutral-90: #191919;
+            --neutral-60: #666666;
+            --neutral-50: #808080;
+            --neutral-40: #999999;
+
+            /* Border/Stroke Colors */
+            --border-color: rgba(29, 29, 29, 0.15);
+            --stroke-dark-25: rgba(255, 249, 237, 0.25);
+            --stroke-dark-50: rgba(29, 29, 29, 0.5);
+
+            /* Typography - Figma font substitutes */
+            --font-serif: 'Cormorant Garamond', Georgia, serif;
+            --font-sans: 'Geist Sans', -apple-system, BlinkMacSystemFont, Helvetica, sans-serif;
+            --font-mono: 'DM Mono', 'SF Mono', 'Monaco', 'Consolas', monospace;
+            --font-button: 'Geist Sans', 'Helvetica Neue', Helvetica, sans-serif;
+
+            /* Spacing - from Figma */
+            --spacing-xxs: 8px;
+            --spacing-xs: 16px;
+            --spacing-2s: 20px;
+            --spacing-3xs: 12px;
+            --spacing-s: 24px;
+            --spacing-m: 32px;
+            --spacing-l: 40px;
+            --spacing-3l: 48px;
+
+            /* Font Sizes - from Figma */
+            --font-size-h1: 48px;
+            --font-size-h2: 40px;
+            --font-size-h3: 32px;
+            --font-size-h4: 24px;
+            --font-size-h5: 18px;
+            --font-size-body-s: 16px;
+            --font-size-body-xs: 14px;
+            --font-size-button: 14px;
+            --font-size-subheading-s: 12px;
+
+            /* Content max width - matches 3-column grid */
+            --content-max-width: 1152px;
+            /* Grid width without padding for action bar alignment */
+            --grid-width: calc(var(--content-max-width) - 48px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-serif);
+            background-color: var(--limestone);
+            color: var(--charcoal);
+            line-height: 1.6;
+        }
+
+        /* Step Containers */
+        .step-container {
+            display: none;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        /* Header */
+        .header {
+            background: var(--charcoal);
+            color: var(--limestone);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--stroke-dark-25);
+        }
+
+        .header-content {
+            max-width: var(--grid-width);
+            margin: 0 auto;
+            padding: var(--spacing-s) 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 100px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 56px;
+            width: auto;
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-s);
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xxs);
+            font-size: var(--font-size-body-xs);
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+            cursor: pointer;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 249, 237, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-subheading-s);
+            font-family: Helvetica, sans-serif;
+            font-weight: 500;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step.active .step-number {
+            background: var(--limestone);
+            color: var(--charcoal);
+        }
+
+        .step.completed {
+            opacity: 0.8;
+        }
+
+        .step.completed .step-number {
+            background: var(--limestone);
+            color: var(--charcoal);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: var(--content-max-width);
+            margin: 0 auto;
+            padding: var(--spacing-3l) var(--spacing-s);
+            padding-bottom: 160px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: var(--spacing-3l);
+        }
+
+        .hero-title {
+            font-family: var(--font-serif);
+            font-size: 56px;
+            color: var(--vineyard-burgundy);
+            margin-bottom: var(--spacing-xs);
+            font-weight: 400;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: var(--font-size-h5);
+            color: var(--vineyard-burgundy);
+            max-width: 560px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-family: Helvetica, sans-serif;
+        }
+
+        /* Trip Parameters - Dark bar at top */
+        .trip-parameters {
+            background: var(--charcoal);
+            padding: var(--spacing-m) var(--spacing-l);
+            margin-bottom: var(--spacing-3l);
+            display: flex;
+            gap: var(--spacing-l);
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .param-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .param-label {
+            font-size: var(--font-size-subheading-s);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--limestone);
+            margin-bottom: var(--spacing-3xs);
+            font-weight: 500;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .param-input {
+            width: 100%;
+            height: 60px;
+            padding: 0 var(--spacing-2s);
+            border: 1px solid rgba(255, 249, 237, 0.25);
+            background: transparent;
+            color: var(--limestone);
+            font-size: var(--font-size-body-s);
+            font-family: Helvetica, sans-serif;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        select.param-input {
+            padding-right: var(--spacing-l);
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23FFF9ED' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+        }
+
+        .param-input:hover,
+        .param-input:focus {
+            border-color: var(--limestone);
+            outline: none;
+        }
+
+        .param-input::placeholder {
+            color: rgba(255, 249, 237, 0.4);
+        }
+
+        .param-input option {
+            background: var(--charcoal);
+            color: var(--limestone);
+        }
+
+        /* Date Input Styling - Custom formatted display */
+        .date-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .date-input-wrapper input[type="date"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .date-display {
+            width: 100%;
+            height: 60px;
+            padding: 0 var(--spacing-2s);
+            padding-right: var(--spacing-l);
+            border: 1px solid rgba(255, 249, 237, 0.25);
+            background: transparent;
+            color: var(--limestone);
+            font-size: var(--font-size-body-s);
+            font-family: Helvetica, sans-serif;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23FFF9ED' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+        }
+
+        .date-input-wrapper:hover .date-display {
+            border-color: var(--limestone);
+        }
+
+        /* Duration Slider - aligned with other inputs */
+        .slider-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        .slider-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 20px;
+        }
+
+        .duration-slider {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255, 249, 237, 0.25);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .duration-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--limestone);
+            cursor: pointer;
+        }
+
+        .duration-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--limestone);
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--font-size-body-s);
+            color: var(--limestone);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .duration-display {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-body-s);
+            color: var(--limestone);
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 6px;
+            margin-top: var(--spacing-xxs);
+        }
+
+        .duration-display span {
+            font-size: var(--font-size-h4);
+            font-family: var(--font-serif);
+            color: var(--limestone);
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: var(--spacing-s);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 1.5px solid var(--charcoal);
+        }
+
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h3);
+            font-weight: 400;
+            letter-spacing: -0.5px;
+        }
+
+        .section-hint {
+            font-size: var(--font-size-body-xs);
+            color: var(--neutral-60);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .selection-count {
+            font-family: Helvetica, sans-serif;
+            font-size: var(--font-size-body-xs);
+            color: var(--vineyard-burgundy);
+            background: rgba(95, 0, 2, 0.08);
+            padding: var(--spacing-xxs) var(--spacing-xs);
+        }
+
+        /* Destination Grid */
+        .destinations-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-s);
+            margin-bottom: var(--spacing-3l);
+        }
+
+        .destination-card {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            background: var(--off-white);
+        }
+
+        .destination-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .destination-card.selected {
+            border: 2px solid var(--vineyard-burgundy);
+        }
+
+        .destination-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #d4c4b0 0%, #a69080 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .destination-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .destination-card:hover .destination-image img {
+            transform: scale(1.05);
+        }
+
+        /* Selection indicator */
+        .selection-indicator {
+            position: absolute;
+            top: var(--spacing-xs);
+            right: var(--spacing-xs);
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--charcoal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .destination-card.selected .selection-indicator {
+            background: var(--vineyard-burgundy);
+            border-color: var(--vineyard-burgundy);
+        }
+
+        .selection-indicator::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: transparent;
+            transition: background 0.2s ease;
+        }
+
+        .destination-card.selected .selection-indicator::after {
+            background: var(--limestone);
+        }
+
+        .destination-content {
+            padding: var(--spacing-s);
+        }
+
+        .destination-location {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--neutral-60);
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .destination-name {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            color: var(--charcoal);
+            margin-bottom: var(--spacing-xxs);
+            font-weight: 400;
+            letter-spacing: -0.36px;
+            line-height: 1.2;
+        }
+
+        .destination-description {
+            font-size: 13px;
+            color: var(--neutral-60);
+            line-height: 1.5;
+            margin-bottom: var(--spacing-3xs);
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-family: Helvetica, sans-serif;
+            min-height: 78px; /* 4 lines: 13px * 1.5 line-height * 4 */
+        }
+
+        .destination-meta {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+            margin-top: var(--spacing-3xs);
+        }
+
+        .meta-tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: rgba(29, 29, 29, 0.06);
+            color: var(--neutral-60);
+            font-weight: 500;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .min-stay {
+            font-family: Helvetica, sans-serif;
+            font-size: 11px;
+            color: var(--neutral-40);
+        }
+
+        /* Bottom Action Bar */
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--limestone);
+            border-top: 1.5px solid var(--charcoal);
+            padding: var(--spacing-2s) var(--spacing-s);
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .action-bar.visible {
+            transform: translateY(0);
+        }
+
+        .action-bar-content {
+            max-width: var(--grid-width);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--spacing-s);
+        }
+
+        .selection-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xxs);
+            flex: 1;
+            min-width: 0;
+        }
+
+        .selected-pills {
+            display: flex;
+            gap: var(--spacing-xxs);
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .selected-pill {
+            background: var(--charcoal);
+            color: var(--limestone);
+            padding: var(--spacing-xxs) var(--spacing-xs);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xxs);
+            white-space: nowrap;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .pill-remove {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .pill-remove:hover {
+            opacity: 1;
+        }
+
+        .summary-text {
+            font-size: var(--font-size-body-xs);
+            color: var(--neutral-60);
+            white-space: nowrap;
+            width: 100%;
+            margin-top: var(--spacing-xxs);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .summary-text strong {
+            color: var(--charcoal);
+            font-weight: 600;
+        }
+
+        .warning-text {
+            color: var(--warning);
+        }
+
+        .button-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--spacing-xxs);
+            flex-shrink: 0;
+        }
+
+        .button-section .continue-btn {
+            width: 260px;
+        }
+
+        .button-warning {
+            font-size: var(--font-size-body-xs);
+            color: var(--warning);
+            text-align: right;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .continue-btn {
+            background: var(--vineyard-burgundy);
+            color: var(--limestone);
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-m);
+            font-size: var(--font-size-button);
+            font-weight: 500;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            font-family: var(--font-button);
+            transition: background 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .continue-btn:hover:not(:disabled) {
+            background: #4a0001;
+        }
+
+        .continue-btn:disabled {
+            background: var(--neutral-40);
+            cursor: not-allowed;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: var(--charcoal);
+            border: 1px solid var(--charcoal);
+            padding: var(--spacing-xs) var(--spacing-m);
+            font-size: var(--font-size-button);
+            font-weight: 500;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            font-family: var(--font-button);
+            transition: all 0.2s;
+            white-space: nowrap;
+            line-height: 1.1;
+            margin-right: var(--spacing-xs);
+            text-align: center;
+        }
+
+        .back-btn:hover {
+            background: var(--charcoal);
+            color: var(--limestone);
+        }
+
+        /* Step 2 - Route Analysis Styles */
+        .route-analysis {
+            background: transparent;
+            margin-bottom: var(--spacing-m);
+            overflow: hidden;
+            padding: var(--spacing-s);
+        }
+
+        .analysis-header {
+            background: var(--charcoal);
+            padding: var(--spacing-s);
+            margin-bottom: var(--spacing-s);
+        }
+
+        .analysis-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .analysis-title {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            color: var(--limestone);
+            font-weight: 400;
+            letter-spacing: -0.48px;
+        }
+
+        .mini-stats {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .mini-stat {
+            background: var(--limestone);
+            padding: var(--spacing-xs);
+            text-align: center;
+            width: 90px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mini-stat-number {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            color: var(--charcoal);
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .mini-stat-label {
+            font-size: 9px;
+            color: var(--charcoal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: Helvetica, sans-serif;
+            margin-top: 4px;
+        }
+
+        .route-timeline {
+            padding: 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: var(--spacing-s);
+            position: relative;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 60px;
+            bottom: -24px;
+            width: 2px;
+            background: var(--charcoal);
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-dot-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: var(--spacing-s);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            background: var(--vineyard-burgundy);
+            color: var(--limestone);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-family: Helvetica, sans-serif;
+            font-size: var(--font-size-body-xs);
+        }
+
+        .timeline-reorder {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 4px;
+        }
+
+        .timeline-reorder-btn {
+            width: 28px;
+            height: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--limestone);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--charcoal);
+            transition: all 0.2s;
+        }
+
+        .timeline-reorder-btn:hover:not(:disabled) {
+            background: var(--charcoal);
+            color: var(--limestone);
+            border-color: var(--charcoal);
+        }
+
+        .timeline-reorder-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .timeline-dot.transit {
+            background: var(--warning);
+            color: var(--charcoal);
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: var(--limestone);
+            border: 1px solid var(--charcoal);
+            display: flex;
+            overflow: hidden;
+        }
+
+        .timeline-thumbnail {
+            width: 200px;
+            height: 100%;
+            min-height: 140px;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .timeline-content-inner {
+            flex: 1;
+            padding: var(--spacing-s);
+        }
+
+        .timeline-destination-name {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            font-weight: 400;
+            color: var(--charcoal);
+        }
+
+        .timeline-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-m);
+            margin-top: var(--spacing-xs);
+            align-items: center;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            font-size: var(--font-size-body-xs);
+            color: var(--neutral-60);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--vineyard-burgundy);
+            font-size: var(--font-size-body-s);
+            margin-right: var(--spacing-xxs);
+            font-family: var(--font-serif);
+        }
+
+        .timeline-price {
+            text-align: right;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .price-main,
+        .timeline-price .price-main {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            color: var(--vineyard-burgundy);
+            font-weight: 600;
+        }
+
+        .price-sub {
+            font-size: var(--font-size-body-xs);
+            color: var(--neutral-60);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .travel-info {
+            background: rgba(29, 29, 29, 0.03);
+            padding: var(--spacing-xs);
+            margin-top: var(--spacing-xs);
+            font-size: var(--font-size-body-xs);
+            color: var(--neutral-60);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .action-section {
+            background: var(--limestone);
+            padding: var(--spacing-s);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--spacing-xs);
+        }
+
+        .action-section .back-btn,
+        .action-section .continue-btn {
+            width: 260px;
+            margin: 0;
+        }
+
+        /* Route Optimization Recommendations */
+        .recommendations {
+            background: var(--limestone);
+            margin-bottom: var(--spacing-m);
+            overflow: hidden;
+        }
+
+        .recommendations-header {
+            background: var(--warning);
+            padding: var(--spacing-s);
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            box-sizing: border-box;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            color: var(--charcoal);
+        }
+
+        .recommendations-title {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            color: var(--charcoal);
+            margin-bottom: 4px;
+            font-weight: 400;
+            letter-spacing: -0.48px;
+        }
+
+        .recommendations-subtitle {
+            color: rgba(29, 29, 29, 0.75);
+            font-size: var(--font-size-body-xs);
+            letter-spacing: -0.14px;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .recommendation-item {
+            padding: var(--spacing-s);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .recommendation-title {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h5);
+            font-weight: 400;
+            color: var(--charcoal);
+            margin-bottom: 4px;
+            letter-spacing: -0.36px;
+        }
+
+        .recommendation-reason {
+            color: var(--neutral-60);
+            font-size: var(--font-size-body-xs);
+            letter-spacing: -0.14px;
+            line-height: 1.4;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .recommendation-actions {
+            display: flex;
+            gap: var(--spacing-xxs);
+            flex-shrink: 0;
+        }
+
+        .btn-recommend {
+            padding: var(--spacing-xs) var(--spacing-s);
+            border: none;
+            cursor: pointer;
+            font-size: var(--font-size-body-xs);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .btn-accept {
+            background: var(--vineyard-burgundy);
+            color: var(--limestone);
+        }
+
+        .btn-accept:hover {
+            background: #4a0001;
+        }
+
+        .btn-modify {
+            background: var(--charcoal);
+            color: var(--limestone);
+        }
+
+        .btn-modify:hover {
+            background: #333;
+        }
+
+        .btn-dismiss {
+            background: transparent;
+            color: var(--neutral-60);
+            border: 1px solid var(--neutral-60);
+        }
+
+        .btn-dismiss:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .recommendation-details {
+            background: rgba(29, 29, 29, 0.03);
+            padding: var(--spacing-xs);
+            border: 1px solid var(--border-color);
+        }
+
+        .hotel-suggestion {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--font-size-body-xs);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .hotel-name {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-body-s);
+            color: var(--charcoal);
+            margin-bottom: 2px;
+        }
+
+        .hotel-location {
+            font-size: var(--font-size-body-xs);
+            color: var(--neutral-60);
+        }
+
+        .hotel-price {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-body-s);
+            color: var(--vineyard-burgundy);
+            font-weight: 600;
+        }
+
+        .accepted-indicator {
+            color: var(--success);
+            font-weight: 600;
+            font-size: var(--font-size-body-xs);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .dismissed-indicator {
+            color: var(--neutral-60);
+            font-style: italic;
+            font-size: var(--font-size-body-xs);
+            font-family: Helvetica, sans-serif;
+        }
+
+        /* Stopover timeline item */
+        .timeline-item.stopover .timeline-dot {
+            background: var(--warning);
+            color: var(--charcoal);
+        }
+
+        .timeline-item.stopover .timeline-content {
+            border-left-color: var(--warning);
+        }
+
+        /* Step 3 - Room Selection Styles */
+        .step3-layout {
+            display: grid;
+            grid-template-columns: 1fr 450px;
+            gap: var(--spacing-m);
+        }
+
+        .properties-list {
+            background: var(--limestone);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .property-accordion {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .property-accordion:last-child {
+            border-bottom: none;
+        }
+
+        .property-header {
+            padding: var(--spacing-s);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .property-header:hover {
+            background: rgba(29, 29, 29, 0.03);
+        }
+
+        .property-header.active {
+            background: rgba(29, 29, 29, 0.03);
+            border-left-color: var(--vineyard-burgundy);
+        }
+
+        .property-header.completed {
+            border-left-color: var(--charcoal);
+        }
+
+        /* Stopover accordion styling */
+        .stopover-accordion .property-header {
+            cursor: default;
+            background: rgba(255, 131, 42, 0.05);
+            border-left-color: var(--warning);
+        }
+
+        .stopover-accordion .property-header:hover {
+            background: rgba(255, 131, 42, 0.05);
+        }
+
+        .property-info {
+            flex: 1;
+        }
+
+        .property-name {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            font-weight: 400;
+            color: var(--charcoal);
+            margin-bottom: 4px;
+        }
+
+        .property-dates {
+            font-size: var(--font-size-subheading-s);
+            color: var(--neutral-60);
+            text-transform: uppercase;
+            letter-spacing: 0.96px;
+            margin-bottom: 4px;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .property-selection-preview {
+            font-size: var(--font-size-body-xs);
+            color: var(--vineyard-burgundy);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .property-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .status-badge {
+            padding: var(--spacing-xxs) var(--spacing-xs);
+            font-size: var(--font-size-subheading-s);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.96px;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .status-badge.pending {
+            background: var(--warning);
+            color: var(--charcoal);
+        }
+
+        .status-badge.completed {
+            background: var(--charcoal);
+            color: var(--limestone);
+        }
+
+        .chevron {
+            font-size: var(--font-size-body-s);
+            color: var(--charcoal);
+            transition: transform 0.3s;
+        }
+
+        .chevron.rotated {
+            transform: rotate(180deg);
+        }
+
+        .property-content {
+            display: none;
+            padding: 0 var(--spacing-s) var(--spacing-s);
+            background: rgba(29, 29, 29, 0.03);
+        }
+
+        .property-content.active {
+            display: block;
+        }
+
+        .room-options {
+            display: grid;
+            gap: var(--spacing-xs);
+        }
+
+        .room-option {
+            background: var(--off-white);
+            padding: var(--spacing-s);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .room-option:hover {
+            border-color: var(--charcoal);
+        }
+
+        .room-option.selected {
+            border: 2px solid var(--vineyard-burgundy);
+            padding: calc(var(--spacing-s) - 1px);
+        }
+
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .room-details {
+            flex: 1;
+        }
+
+        .room-name {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            font-weight: 400;
+            color: var(--charcoal);
+            margin-bottom: var(--spacing-xxs);
+        }
+
+        .room-features {
+            font-size: var(--font-size-body-xs);
+            color: var(--neutral-60);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .room-price {
+            text-align: right;
+            margin-left: var(--spacing-xs);
+        }
+
+        .room-price .price-main {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            font-weight: 600;
+            color: var(--vineyard-burgundy);
+        }
+
+        .room-price .price-sub {
+            font-size: var(--font-size-subheading-s);
+            color: var(--neutral-60);
+            text-transform: uppercase;
+            font-family: Helvetica, sans-serif;
+        }
+
+        /* Trip Summary Panel */
+        .summary-panel {
+            background: var(--limestone);
+            border: 1px solid var(--border-color);
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .summary-panel-header {
+            background: var(--vineyard-burgundy);
+            color: var(--limestone);
+            padding: var(--spacing-s);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .step3-layout .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 90px;
+            box-sizing: border-box;
+        }
+
+        .summary-panel-header {
+            min-height: 90px;
+            box-sizing: border-box;
+        }
+
+        .summary-panel-header .summary-title {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            font-weight: 400;
+        }
+
+        .summary-panel-header .summary-mini-stats {
+            display: flex;
+            gap: 4px;
+        }
+
+        .summary-panel-header .summary-mini-stat {
+            background: var(--limestone);
+            padding: 4px;
+            text-align: center;
+            width: 62px;
+            height: 42px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-panel-header .summary-mini-stat-number {
+            font-family: var(--font-serif);
+            font-size: 16px;
+            color: var(--charcoal);
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .summary-panel-header .summary-mini-stat-label {
+            font-size: 7px;
+            color: var(--charcoal);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-family: Helvetica, sans-serif;
+            margin-top: 2px;
+        }
+
+        .summary-panel-content {
+            padding: var(--spacing-s);
+        }
+
+        .summary-line-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: var(--spacing-xs);
+            align-items: baseline;
+            padding: var(--spacing-s) 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: var(--font-size-body-xs);
+            font-family: Helvetica, sans-serif;
+        }
+
+        .summary-line-item .summary-property-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .summary-line-item .property-name-text {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            font-weight: 400;
+            line-height: 1;
+        }
+
+        .summary-line-item .room-type-text {
+            font-family: Helvetica, sans-serif;
+            font-size: var(--font-size-body-xs);
+            color: var(--neutral-60);
+        }
+
+        .summary-line-item .nights-text {
+            font-size: var(--font-size-body-xs);
+            color: var(--neutral-60);
+            white-space: nowrap;
+            width: 45px;
+        }
+
+        .summary-line-item:last-of-type {
+            border-bottom: none;
+        }
+
+        .summary-line-item.total {
+            border-top: 2px solid var(--charcoal);
+            margin-top: var(--spacing-xs);
+            padding-top: var(--spacing-s);
+            font-weight: 600;
+            font-size: var(--font-size-body-s);
+        }
+
+        .summary-line-item .price {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            font-weight: 600;
+            color: var(--vineyard-burgundy);
+            text-align: right;
+            width: 105px;
+        }
+
+        .summary-line-item.discount .price {
+            color: var(--charcoal);
+        }
+
+        .summary-line-item .price.complimentary {
+            font-size: var(--font-size-h5);
+        }
+
+        .summary-line-item.discount,
+        .summary-line-item.total {
+            grid-template-columns: 1fr auto;
+        }
+
+        .summary-actions {
+            margin-top: var(--spacing-s);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xxs);
+        }
+
+        .summary-actions .continue-btn,
+        .summary-actions .back-btn {
+            width: 260px;
+            margin: 0;
+        }
+
+        /* Step 4 - Booking Summary Styles */
+        .booking-summary {
+            background: var(--limestone);
+            padding: var(--spacing-s);
+            margin-bottom: var(--spacing-m);
+        }
+
+        .booking-summary h3 {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h4);
+            margin-bottom: var(--spacing-s);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .booking-summary table {
+            font-family: Helvetica, sans-serif;
+        }
+
+        .booking-summary strong {
+            font-family: var(--font-serif);
+        }
+
+        /* Route Editing Controls - Inline */
+        .reorder-controls-inline {
+            display: flex;
+            flex-direction: row;
+            gap: 2px;
+        }
+
+        .reorder-btn-inline {
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: var(--charcoal);
+            transition: all 0.2s;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .reorder-btn-inline:hover:not(:disabled) {
+            background: var(--charcoal);
+            color: var(--limestone);
+            border-color: var(--charcoal);
+        }
+
+        .reorder-btn-inline:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .nights-editable {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nights-btn-inline {
+            width: 22px;
+            height: 22px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--charcoal);
+            transition: all 0.2s;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .nights-btn-inline:hover:not(:disabled) {
+            background: var(--charcoal);
+            color: var(--limestone);
+            border-color: var(--charcoal);
+        }
+
+        .nights-btn-inline:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .nights-value-inline {
+            font-family: Helvetica, sans-serif;
+            font-size: var(--font-size-body-s);
+            font-weight: 600;
+            color: var(--charcoal);
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(29, 29, 29, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--limestone);
+            max-width: 480px;
+            width: 90%;
+            padding: var(--spacing-l);
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h3);
+            font-weight: 400;
+            color: var(--charcoal);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .modal-message {
+            font-family: Helvetica, sans-serif;
+            font-size: var(--font-size-body-s);
+            color: var(--neutral-60);
+            margin-bottom: var(--spacing-s);
+            line-height: 1.6;
+        }
+
+        .modal-highlight {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h3);
+            color: var(--vineyard-burgundy);
+            margin-bottom: var(--spacing-s);
+            font-weight: 600;
+        }
+
+        .modal-thank-you {
+            font-family: var(--font-serif);
+            font-size: var(--font-size-h5);
+            font-style: italic;
+            color: var(--charcoal);
+            margin-top: var(--spacing-s);
+            margin-bottom: var(--spacing-s);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: var(--spacing-xs) var(--spacing-s);
+            font-family: Helvetica, sans-serif;
+            font-size: var(--font-size-body-xs);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 160px;
+        }
+
+        .modal-btn-secondary {
+            background: transparent;
+            border: 1px solid var(--charcoal);
+            color: var(--charcoal);
+        }
+
+        .modal-btn-secondary:hover {
+            background: var(--charcoal);
+            color: var(--limestone);
+        }
+
+        .modal-btn-primary {
+            background: var(--vineyard-burgundy);
+            border: 1px solid var(--vineyard-burgundy);
+            color: var(--limestone);
+        }
+
+        .modal-btn-primary:hover {
+            background: var(--vineyard-burgundy-dark);
+            border-color: var(--vineyard-burgundy-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .destinations-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .step3-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .trip-parameters {
+                flex-direction: column;
+                gap: var(--spacing-s);
+                padding: var(--spacing-s);
+            }
+
+            .param-group {
+                width: 100%;
+            }
+
+            .destinations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-bar-content {
+                flex-direction: column;
+                gap: var(--spacing-xs);
+            }
+
+            .selection-summary {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .selected-pills {
+                width: 100%;
+            }
+
+            .continue-btn, .back-btn {
+                width: 100%;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-xxs);
+            }
+
+            .progress-indicator span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <svg width="120" height="90" viewBox="0 0 300 226" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M74.8966 201.74C74.8966 187.43 85.5882 175.997 99.9704 175.997C112.742 175.997 118.025 184.156 119.707 187.575L113.918 190.252C111.693 184.68 106.754 178.548 98.505 178.548C89.5501 178.548 80.7218 185.748 80.7218 198.122C80.7218 211.491 90.6898 220.591 102.196 220.591C108.346 220.591 112.96 218.112 116.306 215.037L117.446 216.249C114.371 220.536 108.075 225.276 99.1925 225.276C86.4204 225.276 74.9146 215.905 74.9146 201.74H74.8966Z" fill="#FFF9ED"/>
+                    <path d="M126.763 177.064H133.565V202.011L158.422 177.064H161.135L141.814 196.602L161.605 224.227H153.917L137.129 201.088L133.583 204.634V224.227H126.781V177.064H126.763Z" fill="#FFF9ED"/>
+                    <path d="M262.444 214.024L268.667 212.341C270.132 218.926 276.048 223.196 282.615 223.196C289.182 223.196 293.361 219.686 293.361 214.44C293.361 199.985 264.307 204.689 264.307 188.66C264.307 181.098 271.109 175.997 281.457 175.997C289.724 175.997 297.304 179.742 299.62 186.128L293.451 187.864C291.751 181.768 286.016 178.095 280.534 178.095C274.51 178.095 270.331 181.243 270.331 186.001C270.331 199.026 300 194.648 300 211.636C300 220.066 292.89 225.294 281.692 225.294C272.267 225.294 264.47 221.043 262.444 214.042V214.024Z" fill="#FFF9ED"/>
+                    <path d="M186.299 175.997C172.116 175.997 161.895 188.1 161.895 201.27C161.895 214.44 172.062 225.276 186.1 225.276C200.139 225.276 210.505 213.173 210.505 199.931C210.505 186.688 200.283 175.997 186.299 175.997ZM188.398 222.49C177.055 222.363 168.335 210.695 168.209 197.181C168.1 187.521 173.925 178.692 183.929 178.801C195.272 178.927 204.046 190.596 204.191 204.11C204.3 213.77 198.474 222.599 188.416 222.49H188.398Z" fill="#FFF9ED"/>
+                    <path d="M217.577 177.064H223.619L251.823 217.189H251.95V177.064H255.007V224.208H248.91L220.652 184.083H220.508L220.652 224.208H217.577V177.064Z" fill="#FFF9ED"/>
+                    <path d="M20.7863 199.967V199.84C27.3894 199.569 33.2509 195.191 33.2509 188.732C33.2509 180.23 25.6346 177.064 16.4807 177.064H0V224.208H18.2898C27.9864 224.208 35.2589 220.228 35.2589 211.744C35.2589 203.929 28.7282 200.22 20.7682 199.949L20.7863 199.967ZM6.83832 179.47H15.6485C23.0115 179.47 27.0638 182.437 27.0638 189.257C27.0638 197.163 21.4376 198.99 15.5943 198.99H6.83832V179.47ZM17.2948 221.64H6.83832V201.125H15.8656C23.6085 201.125 28.7463 203.929 28.7463 211.382C28.7463 219.306 24.2236 221.64 17.2948 221.64Z" fill="#FFF9ED"/>
+                    <path d="M42.1706 177.064H70.537V179.47H49.027V198.972H67.5158V201.106H49.027V221.621H70.537V224.208H42.1706V177.064Z" fill="#FFF9ED"/>
+                    <path d="M130.372 39.7286C127.246 36.3037 125.529 31.8947 125.529 27.2156C125.529 22.5365 127.246 18.1372 130.372 14.7027C133.498 18.1276 135.215 22.5365 135.215 27.2156C135.215 31.8947 133.498 36.294 130.372 39.7286Z" fill="#FFF9ED"/>
+                    <path d="M169.623 39.7286C166.497 36.3037 164.78 31.8947 164.78 27.2156C164.78 22.5365 166.497 18.1372 169.623 14.7027C172.749 18.1276 174.466 22.5365 174.466 27.2156C174.466 31.8947 172.749 36.294 169.623 39.7286Z" fill="#FFF9ED"/>
+                    <path d="M149.991 23.0192C147.116 19.8644 145.534 15.8124 145.534 11.5096C145.534 7.20677 147.106 3.15477 149.991 0C152.866 3.15477 154.448 7.20677 154.448 11.5096C154.448 15.8124 152.876 19.8644 149.991 23.0192Z" fill="#FFF9ED"/>
+                    <path d="M130.371 81.2526C126.676 77.2006 124.65 71.9909 124.65 66.4725C124.65 60.954 126.676 55.7443 130.371 51.6923C134.066 55.7443 136.092 60.954 136.092 66.4725C136.092 71.9909 134.066 77.2006 130.371 81.2526Z" fill="#FFF9ED"/>
+                    <path d="M169.63 81.2526C165.934 77.2006 163.908 71.9909 163.908 66.4725C163.908 60.954 165.934 55.7443 169.63 51.6923C173.325 55.7443 175.351 60.954 175.351 66.4725C175.351 71.9909 173.325 77.2006 169.63 81.2526Z" fill="#FFF9ED"/>
+                    <path d="M149.99 52.1082C144.906 52.1082 140.121 50.2462 136.387 46.8406C140.111 43.435 144.906 41.573 149.99 41.573C155.075 41.573 159.86 43.435 163.594 46.8406C159.87 50.2462 155.075 52.1082 149.99 52.1082Z" fill="#FFF9ED"/>
+                    <path d="M189.249 52.1082C184.165 52.1082 179.379 50.2462 175.646 46.8406C179.37 43.435 184.165 41.573 189.249 41.573C194.333 41.573 199.118 43.435 202.852 46.8406C199.128 50.2462 194.333 52.1082 189.249 52.1082Z" fill="#FFF9ED"/>
+                    <path d="M110.744 52.1082C105.66 52.1082 100.875 50.2462 97.1413 46.8406C100.865 43.435 105.66 41.573 110.744 41.573C115.829 41.573 120.614 43.435 124.348 46.8406C120.624 50.2462 115.829 52.1082 110.744 52.1082Z" fill="#FFF9ED"/>
+                    <path d="M205.47 72.1931C199.951 72.1931 194.742 70.1671 190.69 66.472C194.742 62.777 199.951 60.751 205.47 60.751C210.988 60.751 216.198 62.777 220.25 66.472C216.198 70.1671 210.988 72.1931 205.47 72.1931Z" fill="#FFF9ED"/>
+                    <path d="M94.5297 72.1931C89.0113 72.1931 83.8016 70.1671 79.7496 66.472C83.8016 62.777 89.0113 60.751 94.5297 60.751C100.048 60.751 105.258 62.777 109.31 66.472C105.258 70.1671 100.048 72.1931 94.5297 72.1931Z" fill="#FFF9ED"/>
+                    <path d="M130.372 93.2147C127.246 96.6396 125.529 101.049 125.529 105.728C125.529 110.407 127.246 114.806 130.372 118.241C133.498 114.816 135.215 110.407 135.215 105.728C135.215 101.049 133.498 96.6493 130.372 93.2147Z" fill="#FFF9ED"/>
+                    <path d="M169.623 93.2147C166.497 96.6396 164.78 101.049 164.78 105.728C164.78 110.407 166.497 114.806 169.623 118.241C172.749 114.816 174.466 110.407 174.466 105.728C174.466 101.049 172.749 96.6493 169.623 93.2147Z" fill="#FFF9ED"/>
+                    <path d="M149.991 109.915C147.116 113.07 145.534 117.122 145.534 121.425C145.534 125.728 147.106 129.78 149.991 132.935C152.866 129.78 154.448 125.728 154.448 121.425C154.448 117.122 152.876 113.07 149.991 109.915Z" fill="#FFF9ED"/>
+                    <path d="M130.371 51.6827C126.676 55.7347 124.65 60.9444 124.65 66.4628C124.65 71.9813 126.676 77.191 130.371 81.243C134.066 77.191 136.092 71.9813 136.092 66.4628C136.092 60.9444 134.066 55.7347 130.371 51.6827Z" fill="#FFF9ED"/>
+                    <path d="M169.63 51.6827C165.934 55.7347 163.908 60.9444 163.908 66.4628C163.908 71.9813 165.934 77.191 169.63 81.243C173.325 77.191 175.351 71.9813 175.351 66.4628C175.351 60.9444 173.325 55.7347 169.63 51.6827Z" fill="#FFF9ED"/>
+                    <path d="M149.99 80.8376C144.906 80.8376 140.121 82.6996 136.387 86.1052C140.111 89.5108 144.906 91.3728 149.99 91.3728C155.075 91.3728 159.86 89.5108 163.594 86.1052C159.87 82.6996 155.075 80.8376 149.99 80.8376Z" fill="#FFF9ED"/>
+                    <path d="M189.249 80.8376C184.165 80.8376 179.379 82.6996 175.646 86.1052C179.37 89.5108 184.165 91.3728 189.249 91.3728C194.333 91.3728 199.118 89.5108 202.852 86.1052C199.128 82.6996 194.333 80.8376 189.249 80.8376Z" fill="#FFF9ED"/>
+                    <path d="M110.744 80.8376C105.66 80.8376 100.875 82.6996 97.1413 86.1052C100.865 89.5108 105.66 91.3728 110.744 91.3728C115.829 91.3728 120.614 89.5108 124.348 86.1052C120.624 82.6996 115.829 80.8376 110.744 80.8376Z" fill="#FFF9ED"/>
+                    <path d="M205.47 60.751C199.951 60.751 194.742 62.777 190.69 66.472C194.742 70.1671 199.951 72.1931 205.47 72.1931C210.988 72.1931 216.198 70.1671 220.25 66.472C216.198 62.777 210.988 60.751 205.47 60.751Z" fill="#FFF9ED"/>
+                    <path d="M94.5297 60.751C89.0113 60.751 83.8016 62.777 79.7496 66.472C83.8016 70.1671 89.0113 72.1931 94.5297 72.1931C100.048 72.1931 105.258 70.1671 109.31 66.472C105.258 62.777 100.048 60.751 94.5297 60.751Z" fill="#FFF9ED"/>
+                </svg>
+            </div>
+            <div class="progress-indicator">
+                <div class="step active" id="stepIndicator1" onclick="canNavigateTo(1) && goToStep(1)">
+                    <div class="step-number">1</div>
+                    <span>Dream</span>
+                </div>
+                <div class="step" id="stepIndicator2" onclick="canNavigateTo(2) && goToStep(2)">
+                    <div class="step-number">2</div>
+                    <span>Plan</span>
+                </div>
+                <div class="step" id="stepIndicator3" onclick="canNavigateTo(3) && goToStep(3)">
+                    <div class="step-number">3</div>
+                    <span>Select</span>
+                </div>
+                <div class="step" id="stepIndicator4">
+                    <div class="step-number">4</div>
+                    <span>Payment</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 1: Dream - Destination Selection -->
+    <div class="step-container active" id="step1Container">
+        <div class="main-container">
+            <div class="hero-section">
+                <h1 class="hero-title">Where Will Your Journey Take You?</h1>
+                <p class="hero-subtitle">Choose the destinations that inspire you. We'll craft the perfect route and timing.</p>
+            </div>
+
+            <!-- Global Trip Parameters -->
+            <div class="trip-parameters">
+                <div class="param-group">
+                    <div class="param-label">When do you want to depart?</div>
+                    <div class="date-input-wrapper">
+                        <input type="date" class="param-input" id="startDate" onchange="updateDateDisplay()">
+                        <div class="date-display" id="dateDisplay">Select date</div>
+                    </div>
+                </div>
+                <div class="param-group">
+                    <div class="param-label">Trip Duration</div>
+                    <div class="slider-wrapper">
+                        <div class="slider-labels">
+                            <span>5</span>
+                            <span>31</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" class="duration-slider" id="durationSlider"
+                                   min="5" max="31" value="10" onchange="updateDuration(this.value)" oninput="updateDuration(this.value)">
+                        </div>
+                        <div class="duration-display">
+                            <span id="durationValue">10</span> nights
+                        </div>
+                    </div>
+                </div>
+                <div class="param-group">
+                    <div class="param-label">Traveling Party</div>
+                    <select class="param-input" id="partySize" onchange="updateTripParams()">
+                        <option value="1">1 Adult</option>
+                        <option value="2" selected>2 Adults</option>
+                        <option value="3">3 Adults</option>
+                        <option value="4">4 Adults</option>
+                        <option value="2+1">2 Adults, 1 Child</option>
+                        <option value="2+2">2 Adults, 2 Children</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Destination Selection -->
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Choose Your Destinations</h2>
+                    <p class="section-hint">Select 2 or more lodges that call to you</p>
+                </div>
+                <div class="selection-count" id="selectionCount">0 selected</div>
+            </div>
+
+            <div class="destinations-grid" id="destinationsGrid">
+                <!-- Destinations populated by JS -->
+            </div>
+        </div>
+
+        <!-- Fixed Bottom Action Bar -->
+        <div class="action-bar" id="actionBar">
+            <div class="action-bar-content">
+                <div class="selection-summary">
+                    <div class="selected-pills" id="selectedPills">
+                        <!-- Pills populated by JS -->
+                    </div>
+                    <div class="summary-text" id="summaryText">
+                        Select at least 2 destinations
+                    </div>
+                </div>
+                <div class="button-section">
+                    <div class="button-warning" id="buttonWarning"></div>
+                    <button class="continue-btn" id="continueBtn" disabled onclick="proceedToStep2()">
+                        Plan My Journey
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: Plan - Route Optimization -->
+    <div class="step-container" id="step2Container">
+        <div class="main-container" style="padding-bottom: 40px;">
+            <div class="hero-section">
+                <h1 class="hero-title">Plan Your Journey</h1>
+                <p class="hero-subtitle">Arrange your destinations in your preferred order and adjust the dates to suit your schedule. We'll review your route for any travel considerations before you proceed.</p>
+            </div>
+
+            <div class="route-analysis">
+                <div class="analysis-header">
+                    <div class="analysis-header-top">
+                        <div class="analysis-title">Your Planned Journey</div>
+                        <div class="mini-stats" id="miniStats">
+                            <!-- Mini stats populated by JS -->
+                        </div>
+                    </div>
+                </div>
+                <div class="route-timeline" id="routeTimeline">
+                    <!-- Timeline populated by JS -->
+                </div>
+            </div>
+
+            <div class="action-section">
+                <button class="back-btn" onclick="goToStep(1)">Modify Destinations</button>
+                <button class="continue-btn" onclick="checkNightsAndProceed()">Select Accommodations</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 3: Select - Room Selection -->
+    <div class="step-container" id="step3Container">
+        <div class="main-container" style="padding-bottom: 40px;">
+            <div class="hero-section">
+                <h1 class="hero-title">Select Your Accommodations</h1>
+                <p class="hero-subtitle">Choose your preferred room type at each destination. All rates are all-inclusive.</p>
+            </div>
+
+            <div class="step3-layout">
+                <div class="properties-list">
+                    <div class="analysis-header">
+                        <div class="analysis-title">Your Properties</div>
+                        <div class="analysis-subtitle">Select room type for each destination</div>
+                    </div>
+                    <div id="propertiesAccordion">
+                        <!-- Accordions populated by JS -->
+                    </div>
+                </div>
+
+                <div class="summary-panel">
+                    <div class="summary-panel-header">
+                        <div class="summary-title">Trip Summary</div>
+                        <div class="summary-mini-stats">
+                            <div class="summary-mini-stat">
+                                <div class="summary-mini-stat-number" id="summaryDestCount">0</div>
+                                <div class="summary-mini-stat-label">Destinations</div>
+                            </div>
+                            <div class="summary-mini-stat">
+                                <div class="summary-mini-stat-number" id="summaryNightsCount">0</div>
+                                <div class="summary-mini-stat-label">Nights</div>
+                            </div>
+                            <div class="summary-mini-stat">
+                                <div class="summary-mini-stat-number" id="summaryTravelersCount">0</div>
+                                <div class="summary-mini-stat-label">Travelers</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="summary-panel-content">
+                        <div id="summaryLineItems">
+                            <!-- Line items populated by JS -->
+                        </div>
+                        <div class="summary-actions">
+                            <button class="back-btn" onclick="goToStep(2)">Modify Route</button>
+                            <button class="continue-btn" id="step3ContinueBtn" disabled onclick="showPaymentModal()">Make Payment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Secure Payment</h2>
+            <p class="modal-message">You're about to complete your booking for</p>
+            <div class="modal-highlight" id="paymentTotal"></div>
+            <p class="modal-message">You will be redirected to our secure payment gateway to complete your transaction.</p>
+            <p class="modal-thank-you">Thank you for choosing Beckons.</p>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closePaymentModal()">Go Back</button>
+                <button class="modal-btn modal-btn-primary" onclick="processPayment()">Continue to Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================
+        // DATA
+        // =====================
+        const destinations = [
+            {
+                id: 'southern-ocean',
+                name: 'Southern Ocean Lodge',
+                location: 'Kangaroo Island, Australia',
+                description: 'Southern Ocean Lodge offers guests an unforgettable taste of Kangaroo Island, from premium wines and local cuisine to close encounters with kangaroos, koalas and more.',
+                minStay: 3,
+                image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=400&fit=crop',
+                tags: ['Wildlife', 'Coastal'],
+                rooms: [
+                    { name: 'Ocean Retreat', features: 'Coastal views, King bed, Private terrace', price: 2200 },
+                    { name: 'Flinders Suite', features: 'Panoramic ocean views, Lounge area, Premium amenities', price: 2800 },
+                    { name: 'Osprey Pavilion', features: 'Ultimate luxury, Separate lounge, 180 ocean views', price: 3500 }
+                ]
+            },
+            {
+                id: 'the-louise',
+                name: 'The Louise',
+                location: 'Barossa Valley, Australia',
+                description: 'Renowned as the queen of luxury culinary tourism in South Australia, The Louise is nestled within the rolling hills and vineyards of the famed Barossa Valley.',
+                minStay: 2,
+                image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+                tags: ['Wine Country', 'Culinary'],
+                rooms: [
+                    { name: 'Vineyard Suite', features: 'Valley views, King bed, Private terrace', price: 1800 },
+                    { name: 'Barossa Suite', features: 'Larger suite, Outdoor bath, Wine cellar access', price: 2400 }
+                ]
+            },
+            {
+                id: 'capella',
+                name: 'Capella Lodge',
+                location: 'Lord Howe Island, Australia',
+                description: 'Capella Lodge on World Heritage-listed Lord Howe Island is the ultimate in barefoot luxury, welcoming spectacular views of the ocean, subtropical reef and mountains.',
+                minStay: 3,
+                image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&h=400&fit=crop',
+                tags: ['Island', 'World Heritage'],
+                rooms: [
+                    { name: 'Lagoon Loft', features: 'Lagoon views, King bed, Private deck', price: 2400 },
+                    { name: 'Capella Suite', features: 'Ocean & mountain views, Premium position', price: 2900 },
+                    { name: 'Lidgbird Pavilion', features: 'Ultimate luxury, Plunge pool, Full ocean panorama', price: 3600 }
+                ]
+            },
+            {
+                id: 'silky-oaks',
+                name: 'Silky Oaks Lodge',
+                location: 'Daintree Rainforest, Australia',
+                description: 'Long established as Tropical North Queensland\'s luxury bolt-hole, Silky Oaks Lodge is set among lush rainforest overlooking the Mossman River.',
+                minStay: 2,
+                image: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&h=400&fit=crop',
+                tags: ['Rainforest', 'Spa'],
+                rooms: [
+                    { name: 'Treehouse', features: 'Rainforest canopy, Private balcony, River views', price: 1600 },
+                    { name: 'Riverhouse', features: 'Riverside position, Outdoor shower, Premium amenities', price: 2100 },
+                    { name: 'Daintree Pavilion', features: 'Ultimate luxury, Private pool, Full rainforest immersion', price: 2800 }
+                ]
+            },
+            {
+                id: 'longitude',
+                name: 'Longitude 131',
+                location: 'Uluru-Kata Tjuta, Australia',
+                description: 'With views of Uluru or Kata Tjuta from the end of the bed, Longitude 131 delivers a personal connection with Australia\'s iconic Red Centre.',
+                minStay: 2,
+                image: 'https://images.unsplash.com/photo-1529551739587-e242c564f727?w=600&h=400&fit=crop',
+                tags: ['Desert', 'Cultural'],
+                rooms: [
+                    { name: 'Luxury Tent', features: 'Uluru views, King bed, Private deck', price: 2000 },
+                    { name: 'Dune Pavilion', features: 'Premium position, Enhanced amenities, Desert panorama', price: 2600 }
+                ]
+            },
+            {
+                id: 'huka-lodge',
+                name: 'Huka Lodge',
+                location: 'Taupo, New Zealand',
+                description: 'From humble beginnings as a fishermen\'s camp nearly a century ago, Huka Lodge has secured its place as one of New Zealand\'s most celebrated luxury lodges.',
+                minStay: 2,
+                image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&h=400&fit=crop',
+                tags: ['Fly Fishing', 'River'],
+                rooms: [
+                    { name: 'Junior Suite', features: 'River views, King bed, Private terrace', price: 1900 },
+                    { name: 'Lodge Suite', features: 'Larger suite, Fireplace, Premium position', price: 2500 }
+                ]
+            },
+            {
+                id: 'clayoquot',
+                name: 'Clayoquot Wilderness Lodge',
+                location: 'Vancouver Island, Canada',
+                description: 'Vancouver Island\'s celebrated luxury outpost, Clayoquot Wilderness Lodge skirts the banks of its namesake ocean inlet and offers an escape to Canada\'s remote wilderness.',
+                minStay: 3,
+                image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&h=400&fit=crop',
+                tags: ['Wilderness', 'Adventure'],
+                rooms: [
+                    { name: 'Prospect Tent', features: 'Forest views, King bed, Wood stove', price: 2300 },
+                    { name: 'Hillside Tent', features: 'Elevated position, Private deck, Ocean glimpses', price: 2800 },
+                    { name: 'Ensuite Tent', features: 'Premium luxury, En-suite bathroom, Best views', price: 3400 }
+                ]
+            },
+            {
+                id: 'tierra-atacama',
+                name: 'Tierra Atacama',
+                location: 'Atacama Desert, Chile',
+                description: 'Tierra Atacama shines as brightly as the stars that twinkle above it by night, within the vast and arid northern desert on the outskirts of San Pedro de Atacama.',
+                minStay: 3,
+                image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&h=400&fit=crop',
+                tags: ['Stargazing', 'Desert'],
+                rooms: [
+                    { name: 'Atacama Room', features: 'Desert views, King bed, Private terrace', price: 1800 },
+                    { name: 'Superior Room', features: 'Larger room, Outdoor shower, Premium amenities', price: 2200 },
+                    { name: 'Suite', features: 'Ultimate luxury, Separate lounge, Panoramic views', price: 2900 }
+                ]
+            },
+            {
+                id: 'tierra-patagonia',
+                name: 'Tierra Patagonia',
+                location: 'Torres del Paine, Chile',
+                description: 'Embraced by a vast sky and framed by the awe-inspiring Torres del Paine Massif, Tierra Patagonia stands as a luxury refuge in one of the wildest places on Earth.',
+                minStay: 3,
+                image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&h=400&fit=crop',
+                tags: ['Mountains', 'Hiking'],
+                rooms: [
+                    { name: 'Patagonia Room', features: 'Mountain views, King bed, Floor-to-ceiling windows', price: 2100 },
+                    { name: 'Superior Room', features: 'Corner position, Enhanced views, Premium amenities', price: 2600 },
+                    { name: 'Suite', features: 'Ultimate luxury, Separate lounge, Best Torres views', price: 3200 }
+                ]
+            }
+        ];
+
+        // =====================
+        // STATE
+        // =====================
+        let selectedDestinations = [];
+        let tripParams = {
+            startDate: '',
+            duration: 10,
+            party: '2'
+        };
+        let currentStep = 1;
+        let maxStepReached = 1;
+        let optimizedRoute = [];
+        let roomSelections = {};
+        let originalTripDuration = 10; // Track original duration from Step 1
+
+        // Stopover recommendation state
+        let predeterminedStopover = null;
+        let acceptedStopovers = [];
+
+        // =====================
+        // INITIALIZATION
+        // =====================
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDestinations();
+            setDefaultDate();
+        });
+
+        function setDefaultDate() {
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() + 30);
+            const dateInput = document.getElementById('startDate');
+            dateInput.value = startDate.toISOString().split('T')[0];
+            dateInput.min = new Date().toISOString().split('T')[0];
+            tripParams.startDate = dateInput.value;
+            updateDateDisplay();
+        }
+
+        function updateDateDisplay() {
+            const dateInput = document.getElementById('startDate');
+            const dateDisplay = document.getElementById('dateDisplay');
+            tripParams.startDate = dateInput.value;
+
+            if (dateInput.value) {
+                const date = new Date(dateInput.value + 'T00:00:00');
+                const formatted = date.toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                dateDisplay.textContent = formatted;
+            } else {
+                dateDisplay.textContent = 'Select date';
+            }
+            updateStep1UI();
+        }
+
+        // =====================
+        // STEP 1: DESTINATION SELECTION
+        // =====================
+        function renderDestinations() {
+            const grid = document.getElementById('destinationsGrid');
+            grid.innerHTML = destinations.map(dest => `
+                <div class="destination-card" id="card-${dest.id}" onclick="toggleDestination('${dest.id}')">
+                    <div class="destination-image">
+                        <img src="${dest.image}" alt="${dest.name}" loading="lazy" onerror="this.style.display='none'">
+                        <div class="selection-indicator"></div>
+                    </div>
+                    <div class="destination-content">
+                        <div class="destination-location">${dest.location}</div>
+                        <div class="destination-name">${dest.name}</div>
+                        <div class="destination-description">${dest.description}</div>
+                        <div class="destination-meta">
+                            ${dest.tags.map(tag => `<span class="meta-tag">${tag}</span>`).join('')}
+                        </div>
+                        <div class="min-stay">Min ${dest.minStay} nights</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleDestination(id) {
+            const card = document.getElementById(`card-${id}`);
+            const dest = destinations.find(d => d.id === id);
+
+            if (selectedDestinations.find(d => d.id === id)) {
+                selectedDestinations = selectedDestinations.filter(d => d.id !== id);
+                card.classList.remove('selected');
+            } else {
+                selectedDestinations.push({...dest});
+                card.classList.add('selected');
+            }
+
+            updateStep1UI();
+        }
+
+        function removeDestination(id) {
+            const card = document.getElementById(`card-${id}`);
+            selectedDestinations = selectedDestinations.filter(d => d.id !== id);
+            if (card) card.classList.remove('selected');
+            updateStep1UI();
+        }
+
+        function updateStep1UI() {
+            const count = selectedDestinations.length;
+            const actionBar = document.getElementById('actionBar');
+            const continueBtn = document.getElementById('continueBtn');
+            const selectionCount = document.getElementById('selectionCount');
+            const summaryText = document.getElementById('summaryText');
+            const pillsContainer = document.getElementById('selectedPills');
+            const buttonWarning = document.getElementById('buttonWarning');
+
+            selectionCount.textContent = `${count} selected`;
+
+            if (count > 0) {
+                actionBar.classList.add('visible');
+            } else {
+                actionBar.classList.remove('visible');
+            }
+
+            pillsContainer.innerHTML = selectedDestinations.map(dest => `
+                <div class="selected-pill">
+                    ${dest.location}
+                    <span class="pill-remove" onclick="event.stopPropagation(); removeDestination('${dest.id}')">&times;</span>
+                </div>
+            `).join('');
+
+            const minNightsNeeded = selectedDestinations.reduce((sum, d) => sum + d.minStay, 0);
+
+            if (count < 2) {
+                summaryText.innerHTML = `Select at least <strong>2 destinations</strong> to continue`;
+                buttonWarning.innerHTML = '';
+                continueBtn.disabled = true;
+            } else if (minNightsNeeded > tripParams.duration) {
+                summaryText.innerHTML = `<strong>${count} destinations</strong> &bull; Min ${minNightsNeeded} nights required`;
+                buttonWarning.innerHTML = `&#9888; Need at least ${minNightsNeeded} nights (you have ${tripParams.duration})`;
+                continueBtn.disabled = true;
+            } else {
+                summaryText.innerHTML = `<strong>${count} destinations</strong> &bull; Min ${minNightsNeeded} nights required`;
+                buttonWarning.innerHTML = '';
+                continueBtn.disabled = false;
+            }
+        }
+
+        function updateDuration(value) {
+            tripParams.duration = parseInt(value);
+            document.getElementById('durationValue').textContent = value;
+            updateStep1UI();
+        }
+
+        function updateTripParams() {
+            tripParams.party = document.getElementById('partySize').value;
+            updateStep1UI();
+        }
+
+        // =====================
+        // STEP NAVIGATION
+        // =====================
+        function goToStep(stepNum) {
+            // Hide all containers
+            document.querySelectorAll('.step-container').forEach(c => c.classList.remove('active'));
+
+            // Show target container
+            document.getElementById(`step${stepNum}Container`).classList.add('active');
+
+            // Update step indicators
+            for (let i = 1; i <= 4; i++) {
+                const indicator = document.getElementById(`stepIndicator${i}`);
+                indicator.classList.remove('active', 'completed');
+                if (i < stepNum) {
+                    indicator.classList.add('completed');
+                } else if (i === stepNum) {
+                    indicator.classList.add('active');
+                }
+            }
+
+            // Update max step reached
+            if (stepNum > maxStepReached) {
+                maxStepReached = stepNum;
+            }
+
+            // Clear optimizedRoute when going back to Step 1 so it recalculates with new selections
+            if (stepNum === 1) {
+                optimizedRoute = [];
+                roomSelections = {};
+                // Also reset stopover state
+                predeterminedStopover = null;
+                acceptedStopovers = [];
+            }
+
+            currentStep = stepNum;
+
+            // Render step-specific content
+            if (stepNum === 2) {
+                renderStep2();
+            } else if (stepNum === 3) {
+                renderStep3();
+            }
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function canNavigateTo(stepNum) {
+            return stepNum <= maxStepReached;
+        }
+
+        // =====================
+        // STEP 2: ROUTE OPTIMIZATION
+        // =====================
+        function proceedToStep2() {
+            // Store original duration when first entering Step 2
+            originalTripDuration = tripParams.duration;
+            goToStep(2);
+        }
+
+        function renderStep2() {
+            // Initialize optimizedRoute if empty (first time entering Step 2)
+            if (optimizedRoute.length === 0) {
+                optimizedRoute = calculateOptimizedRoute();
+            } else {
+                // Recalculate dates based on current optimizedRoute nights
+                recalculateRouteDates();
+            }
+
+            // Render timeline
+            const timeline = document.getElementById('routeTimeline');
+            const destNights = optimizedRoute.reduce((sum, dest) => sum + dest.nights, 0);
+            const stopoverNights = acceptedStopovers.length; // 1 night per stopover
+            const totalNights = destNights + stopoverNights;
+
+            // Render mini stats in header
+            document.getElementById('miniStats').innerHTML = `
+                <div class="mini-stat">
+                    <div class="mini-stat-number">${optimizedRoute.length}</div>
+                    <div class="mini-stat-label">Destinations</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-number">${totalNights}</div>
+                    <div class="mini-stat-label">Nights</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-number">${formatParty(tripParams.party).split(' ')[0]}</div>
+                    <div class="mini-stat-label">Travelers</div>
+                </div>
+            `;
+
+            // Build timeline with stopovers inserted
+            let timelineHTML = '';
+            let displayIndex = 1;
+
+            optimizedRoute.forEach((dest, index) => {
+                // Add destination
+                timelineHTML += `
+                <div class="timeline-item">
+                    <div class="timeline-dot-container">
+                        <div class="timeline-dot">${displayIndex}</div>
+                        <div class="timeline-reorder">
+                            <button class="timeline-reorder-btn" onclick="moveDestination(${index}, -1)" ${index === 0 ? 'disabled' : ''} title="Move up">&#9650;</button>
+                            <button class="timeline-reorder-btn" onclick="moveDestination(${index}, 1)" ${index === optimizedRoute.length - 1 ? 'disabled' : ''} title="Move down">&#9660;</button>
+                        </div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-thumbnail" style="background-image: url('${dest.image}');"></div>
+                        <div class="timeline-content-inner">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <div class="timeline-destination-name">${dest.name}</div>
+                                    <div style="font-size: var(--font-size-subheading-s); color: var(--neutral-60); text-transform: uppercase; letter-spacing: 0.96px; font-family: Helvetica, sans-serif;">${dest.location}</div>
+                                </div>
+                                <div class="timeline-price">
+                                    <div class="price-sub">from</div>
+                                    <div class="price-main">$${dest.rooms[0].price.toLocaleString()}/night</div>
+                                </div>
+                            </div>
+                            <div class="timeline-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Dates:</span> ${formatDateShort(dest.checkIn)} - ${formatDateShort(dest.checkOut)}
+                                </div>
+                                <div class="detail-item nights-editable">
+                                    <span class="detail-label">Nights:</span>
+                                    <button class="nights-btn-inline" onclick="adjustNights(${index}, -1)" ${dest.nights <= dest.minStay ? 'disabled' : ''}>−</button>
+                                    <span class="nights-value-inline">${dest.nights}</span>
+                                    <button class="nights-btn-inline" onclick="adjustNights(${index}, 1)">+</button>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Guests:</span> ${formatParty(tripParams.party)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                displayIndex++;
+
+                // Check if there's an accepted stopover after this destination
+                const stopover = acceptedStopovers.find(s => s.afterDestinationIndex === index);
+                if (stopover) {
+                    timelineHTML += `
+                    <div class="timeline-item stopover">
+                        <div class="timeline-dot-container">
+                            <div class="timeline-dot">${displayIndex}</div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-content-inner">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <div>
+                                        <div class="timeline-destination-name">${stopover.name}</div>
+                                        <div style="font-size: var(--font-size-subheading-s); color: var(--neutral-60); text-transform: uppercase; letter-spacing: 0.96px; font-family: Helvetica, sans-serif;">${stopover.location}</div>
+                                    </div>
+                                    <div class="timeline-price">
+                                        <div class="price-main" style="color: var(--success);">Complimentary</div>
+                                    </div>
+                                </div>
+                                <div class="timeline-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Dates:</span> ${formatDateShort(stopover.checkIn)} - ${formatDateShort(stopover.checkOut)}
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Duration:</span> 1 night stopover
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    displayIndex++;
+                }
+            });
+
+            timeline.innerHTML = timelineHTML;
+        }
+
+        function recalculateRouteDates() {
+            let currentDate = new Date(tripParams.startDate + 'T00:00:00');
+            optimizedRoute.forEach(dest => {
+                dest.checkIn = formatDateISO(currentDate);
+                currentDate.setDate(currentDate.getDate() + dest.nights);
+                dest.checkOut = formatDateISO(currentDate);
+            });
+        }
+
+        function moveDestination(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= optimizedRoute.length) return;
+
+            // Swap destinations
+            [optimizedRoute[index], optimizedRoute[newIndex]] = [optimizedRoute[newIndex], optimizedRoute[index]];
+
+            // Re-render
+            renderStep2();
+        }
+
+        function adjustNights(index, change) {
+            const dest = optimizedRoute[index];
+            const newNights = dest.nights + change;
+
+            // Enforce minimum stay
+            if (newNights < dest.minStay) return;
+
+            dest.nights = newNights;
+
+            // Re-render
+            renderStep2();
+        }
+
+        function checkNightsAndProceed() {
+            const totalNights = optimizedRoute.reduce((sum, dest) => sum + dest.nights, 0);
+            const nightsChanged = totalNights !== originalTripDuration;
+
+            // Calculate stopover recommendation based on current route
+            calculatePredeterminedStopover();
+
+            // Show the route confirmation modal
+            const modal = document.getElementById('routeConfirmModal');
+            const nightsSection = document.getElementById('nightsChangeSection');
+            const stopoverSection = document.getElementById('stopoverSection');
+            const noStopoverSection = document.getElementById('noStopoverSection');
+            const modalActions = document.getElementById('modalActions');
+
+            // Show/hide nights change section
+            if (nightsChanged) {
+                nightsSection.style.display = 'block';
+                document.getElementById('modalNightsChange').textContent =
+                    `${originalTripDuration} nights → ${totalNights} nights`;
+            } else {
+                nightsSection.style.display = 'none';
+            }
+
+            // Show/hide stopover recommendation
+            if (predeterminedStopover) {
+                stopoverSection.style.display = 'block';
+                noStopoverSection.style.display = 'none';
+                modalActions.style.display = 'none'; // Hide default actions when stopover shown
+
+                document.getElementById('stopoverReasonText').textContent = predeterminedStopover.reason;
+                document.getElementById('stopoverDatesText').textContent =
+                    `${formatDateShort(predeterminedStopover.checkIn)} - ${formatDateShort(predeterminedStopover.checkOut)} • 1 night`;
+            } else {
+                stopoverSection.style.display = 'none';
+                noStopoverSection.style.display = 'block';
+                modalActions.style.display = 'flex'; // Show default actions
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeRouteModal() {
+            document.getElementById('routeConfirmModal').classList.remove('active');
+        }
+
+        function acceptStopoverAndProceed() {
+            if (predeterminedStopover) {
+                // Add stopover to accepted list
+                acceptedStopovers.push({
+                    afterDestinationIndex: predeterminedStopover.insertionIndex,
+                    name: predeterminedStopover.name,
+                    location: predeterminedStopover.location,
+                    checkIn: predeterminedStopover.checkIn,
+                    checkOut: predeterminedStopover.checkOut
+                });
+
+                // Adjust subsequent dates
+                adjustSubsequentDates(predeterminedStopover.insertionIndex, predeterminedStopover.checkOut);
+            }
+
+            // Update trip duration
+            const totalNights = optimizedRoute.reduce((sum, dest) => sum + dest.nights, 0) + acceptedStopovers.length;
+            tripParams.duration = totalNights;
+
+            closeRouteModal();
+            goToStep(3);
+        }
+
+        function declineStopoverAndProceed() {
+            // Update trip duration without stopover
+            const totalNights = optimizedRoute.reduce((sum, dest) => sum + dest.nights, 0);
+            tripParams.duration = totalNights;
+
+            closeRouteModal();
+            goToStep(3);
+        }
+
+        function proceedToStep3() {
+            // Update trip duration
+            const totalNights = optimizedRoute.reduce((sum, dest) => sum + dest.nights, 0);
+            tripParams.duration = totalNights;
+
+            closeRouteModal();
+            goToStep(3);
+        }
+
+        // =====================
+        // STOPOVER RECOMMENDATIONS
+        // =====================
+        function calculatePredeterminedStopover() {
+            // Need at least 2 destinations for a stopover
+            if (optimizedRoute.length < 2) {
+                predeterminedStopover = null;
+                return;
+            }
+
+            // Randomly pick an insertion point (between any two consecutive destinations)
+            const insertionIndex = Math.floor(Math.random() * (optimizedRoute.length - 1));
+            const precedingDest = optimizedRoute[insertionIndex];
+            const followingDest = optimizedRoute[insertionIndex + 1];
+
+            // Stopover dates: check-in = preceding destination's checkout, checkout = +1 day
+            const stopoverCheckIn = precedingDest.checkOut;
+            const stopoverCheckInDate = new Date(stopoverCheckIn + 'T00:00:00');
+            stopoverCheckInDate.setDate(stopoverCheckInDate.getDate() + 1);
+            const stopoverCheckOut = formatDateISO(stopoverCheckInDate);
+
+            predeterminedStopover = {
+                insertionIndex: insertionIndex,
+                name: 'Park Hyatt Sydney',
+                location: 'Sydney, New South Wales',
+                checkIn: stopoverCheckIn,
+                checkOut: stopoverCheckOut,
+                reason: `Long travel day between ${precedingDest.name} and ${followingDest.name} requires overnight connection for optimal comfort`
+            };
+        }
+
+        function updateRecommendationDisplay() {
+            const recommendationsSection = document.getElementById('recommendationsSection');
+            const recommendationsList = document.getElementById('recommendationsList');
+
+            if (!predeterminedStopover || !recommendationsList) {
+                recommendationsSection.style.display = 'none';
+                return;
+            }
+
+            // Show the recommendations section
+            recommendationsSection.style.display = 'block';
+
+            // Format dates for display
+            const checkInDisplay = formatDateShort(predeterminedStopover.checkIn);
+            const checkOutDisplay = formatDateShort(predeterminedStopover.checkOut);
+
+            // Generate the recommendation HTML dynamically
+            recommendationsList.innerHTML = `
+                <div class="recommendation-item" id="recommendation-0">
+                    <div class="recommendation-header">
+                        <div>
+                            <div class="recommendation-title">Sydney Stopover (${checkInDisplay} to ${checkOutDisplay})</div>
+                            <div class="recommendation-reason">
+                                ${predeterminedStopover.reason}
+                            </div>
+                        </div>
+                        <div class="recommendation-actions" id="recommendationActions-0">
+                            <button class="btn-recommend btn-accept" onclick="acceptRecommendation(0)">Accept</button>
+                            <button class="btn-recommend btn-modify" onclick="modifyRecommendation(0)">Modify</button>
+                            <button class="btn-recommend btn-dismiss" onclick="dismissRecommendation(0)">Dismiss</button>
+                        </div>
+                    </div>
+                    <div class="recommendation-details">
+                        <div class="hotel-suggestion">
+                            <div>
+                                <div class="hotel-name">Park Hyatt Sydney (Complimentary)</div>
+                                <div class="hotel-location">Luxury hotel in The Rocks • Harbour views • Walking distance to dining</div>
+                            </div>
+                            <div class="hotel-price">Included</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function acceptRecommendation(index) {
+            if (!predeterminedStopover) {
+                return;
+            }
+
+            const actions = document.getElementById(`recommendationActions-${index}`);
+            if (actions) {
+                actions.innerHTML = '<div class="accepted-indicator">✓ Accepted</div>';
+            }
+
+            // Add the predetermined stopover to accepted list
+            const stopoverData = {
+                afterDestinationIndex: predeterminedStopover.insertionIndex,
+                name: predeterminedStopover.name,
+                location: predeterminedStopover.location,
+                checkIn: predeterminedStopover.checkIn,
+                checkOut: predeterminedStopover.checkOut
+            };
+
+            acceptedStopovers.push(stopoverData);
+
+            // Adjust all subsequent destination dates to accommodate the stopover
+            adjustSubsequentDates(predeterminedStopover.insertionIndex, predeterminedStopover.checkOut);
+
+            // Re-render the timeline to show the stopover
+            renderStep2();
+        }
+
+        function modifyRecommendation(index) {
+            alert('Modification options would open here - different dates, hotel choices, etc.');
+        }
+
+        function dismissRecommendation(index) {
+            const actions = document.getElementById(`recommendationActions-${index}`);
+            if (actions) {
+                actions.innerHTML = '<div class="dismissed-indicator">Dismissed</div>';
+            }
+
+            // Check if it was previously accepted
+            const wasAccepted = acceptedStopovers.some(s => s.afterDestinationIndex === predeterminedStopover?.insertionIndex);
+
+            if (wasAccepted && predeterminedStopover) {
+                // Remove from accepted stopovers
+                acceptedStopovers = acceptedStopovers.filter(s => s.afterDestinationIndex !== predeterminedStopover.insertionIndex);
+
+                // Reset dates to original flow
+                resetToOriginalDates();
+
+                // Re-render
+                renderStep2();
+            }
+        }
+
+        function adjustSubsequentDates(insertionIndex, newStartDate) {
+            // Shift all destinations after the insertion point by 1 day
+            let currentDate = new Date(newStartDate + 'T00:00:00');
+
+            for (let i = insertionIndex + 1; i < optimizedRoute.length; i++) {
+                const dest = optimizedRoute[i];
+                dest.checkIn = formatDateISO(currentDate);
+                currentDate.setDate(currentDate.getDate() + dest.nights);
+                dest.checkOut = formatDateISO(currentDate);
+            }
+        }
+
+        function resetToOriginalDates() {
+            // Recalculate all dates from the start without stopovers
+            recalculateRouteDates();
+        }
+
+        function showPaymentModal() {
+            // Calculate total
+            let total = 0;
+            optimizedRoute.forEach(dest => {
+                const selection = roomSelections[dest.id];
+                if (selection) {
+                    total += selection.total;
+                }
+            });
+            const discount = Math.round(total * 0.1);
+            const finalTotal = total - discount;
+
+            document.getElementById('paymentTotal').textContent = `$${finalTotal.toLocaleString()}`;
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        function processPayment() {
+            closePaymentModal();
+            alert('Redirecting to secure payment gateway...\n\nThis is a demo. In production, this would redirect to a payment processor.');
+        }
+
+        function calculateOptimizedRoute() {
+            // Distribute nights across destinations
+            const totalMinNights = selectedDestinations.reduce((sum, d) => sum + d.minStay, 0);
+            const extraNights = tripParams.duration - totalMinNights;
+            const extraPerDest = Math.floor(extraNights / selectedDestinations.length);
+            let remainder = extraNights % selectedDestinations.length;
+
+            let currentDate = new Date(tripParams.startDate + 'T00:00:00');
+
+            return selectedDestinations.map((dest, index) => {
+                let nights = dest.minStay + extraPerDest;
+                if (remainder > 0) {
+                    nights++;
+                    remainder--;
+                }
+
+                const checkIn = formatDateISO(currentDate);
+                currentDate.setDate(currentDate.getDate() + nights);
+                const checkOut = formatDateISO(currentDate);
+
+                return {
+                    ...dest,
+                    nights,
+                    checkIn,
+                    checkOut
+                };
+            });
+        }
+
+        // =====================
+        // STEP 3: ROOM SELECTION
+        // =====================
+        function renderStep3() {
+            const accordion = document.getElementById('propertiesAccordion');
+            const destNights = optimizedRoute.reduce((sum, d) => sum + d.nights, 0);
+            const stopoverNights = acceptedStopovers.length; // 1 night per stopover
+            const totalNights = destNights + stopoverNights;
+
+            document.getElementById('summaryDestCount').textContent = optimizedRoute.length;
+            document.getElementById('summaryNightsCount').textContent = totalNights;
+            document.getElementById('summaryTravelersCount').textContent = tripParams.party;
+
+            // Build accordion HTML with stopovers interspersed
+            let accordionHTML = '';
+
+            optimizedRoute.forEach((dest, index) => {
+                // Add destination accordion
+                accordionHTML += `
+                <div class="property-accordion" id="accordion-${dest.id}">
+                    <div class="property-header ${roomSelections[dest.id] ? 'completed' : ''}" onclick="toggleAccordion('${dest.id}')">
+                        <div class="property-info">
+                            <div class="property-name">${dest.name}</div>
+                            <div class="property-dates">${formatDateShort(dest.checkIn)} - ${formatDateShort(dest.checkOut)} | ${dest.nights} nights</div>
+                            <div class="property-selection-preview" id="preview-${dest.id}">
+                                ${roomSelections[dest.id] ? roomSelections[dest.id].room.name + ' selected' : 'Please select room type'}
+                            </div>
+                        </div>
+                        <div class="property-status">
+                            <div class="status-badge ${roomSelections[dest.id] ? 'completed' : 'pending'}" id="status-${dest.id}">
+                                ${roomSelections[dest.id] ? 'Selected' : 'Pending'}
+                            </div>
+                            <div class="chevron" id="chevron-${dest.id}">&#9660;</div>
+                        </div>
+                    </div>
+                    <div class="property-content" id="content-${dest.id}">
+                        <div class="room-options">
+                            ${dest.rooms.map((room, roomIndex) => `
+                                <div class="room-option ${roomSelections[dest.id]?.room.name === room.name ? 'selected' : ''}"
+                                     onclick="selectRoom('${dest.id}', ${roomIndex}, ${dest.nights})">
+                                    <div class="room-header">
+                                        <div class="room-details">
+                                            <div class="room-name">${room.name}</div>
+                                            <div class="room-features">${room.features}</div>
+                                        </div>
+                                        <div class="room-price">
+                                            <div class="price-main">$${room.price.toLocaleString()}</div>
+                                            <div class="price-sub">per night</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>`;
+
+                // Check if there's an accepted stopover after this destination
+                const stopover = acceptedStopovers.find(s => s.afterDestinationIndex === index);
+                if (stopover) {
+                    accordionHTML += `
+                    <div class="property-accordion stopover-accordion">
+                        <div class="property-header completed stopover-header">
+                            <div class="property-info">
+                                <div class="property-name">${stopover.name}</div>
+                                <div class="property-dates">${formatDateShort(stopover.checkIn)} - ${formatDateShort(stopover.checkOut)} | 1 night • Partner property</div>
+                                <div class="property-selection-preview" style="color: var(--success);">Complimentary - No selection required</div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+            });
+
+            accordion.innerHTML = accordionHTML;
+
+            updateSummaryPanel();
+
+            // Open first accordion if no selections yet
+            if (Object.keys(roomSelections).length === 0 && optimizedRoute.length > 0) {
+                toggleAccordion(optimizedRoute[0].id);
+            }
+        }
+
+        function toggleAccordion(destId) {
+            const content = document.getElementById(`content-${destId}`);
+            const header = document.querySelector(`#accordion-${destId} .property-header`);
+            const chevron = document.getElementById(`chevron-${destId}`);
+
+            // Close all others
+            document.querySelectorAll('.property-content').forEach(c => {
+                if (c.id !== `content-${destId}`) {
+                    c.classList.remove('active');
+                }
+            });
+            document.querySelectorAll('.property-header').forEach(h => {
+                if (!h.closest(`#accordion-${destId}`)) {
+                    h.classList.remove('active');
+                }
+            });
+            document.querySelectorAll('.chevron').forEach(c => {
+                if (c.id !== `chevron-${destId}`) {
+                    c.classList.remove('rotated');
+                }
+            });
+
+            // Toggle this one
+            content.classList.toggle('active');
+            header.classList.toggle('active');
+            chevron.classList.toggle('rotated');
+        }
+
+        function selectRoom(destId, roomIndex, nights) {
+            const dest = optimizedRoute.find(d => d.id === destId);
+            const room = dest.rooms[roomIndex];
+
+            roomSelections[destId] = {
+                room: room,
+                nights: nights,
+                total: room.price * nights
+            };
+
+            // Update UI
+            document.getElementById(`preview-${destId}`).textContent = `${room.name} selected`;
+            document.getElementById(`status-${destId}`).textContent = 'Selected';
+            document.getElementById(`status-${destId}`).className = 'status-badge completed';
+            document.querySelector(`#accordion-${destId} .property-header`).classList.add('completed');
+
+            // Update room options visual
+            const accordion = document.getElementById(`accordion-${destId}`);
+            accordion.querySelectorAll('.room-option').forEach((opt, idx) => {
+                opt.classList.toggle('selected', idx === roomIndex);
+            });
+
+            updateSummaryPanel();
+            updateStep3Continue();
+
+            // Auto-advance to next unselected property
+            const nextUnselected = optimizedRoute.find(d => !roomSelections[d.id]);
+            if (nextUnselected) {
+                setTimeout(() => toggleAccordion(nextUnselected.id), 300);
+            }
+        }
+
+        function updateSummaryPanel() {
+            const container = document.getElementById('summaryLineItems');
+            let total = 0;
+            let html = '';
+
+            // Build summary with destinations and interspersed stopovers
+            optimizedRoute.forEach((dest, index) => {
+                const selection = roomSelections[dest.id];
+                if (selection) {
+                    total += selection.total;
+                    html += `
+                        <div class="summary-line-item">
+                            <div class="summary-property-info">
+                                <span class="property-name-text">${dest.name}</span>
+                                <span class="room-type-text">${selection.room.name}</span>
+                            </div>
+                            <span class="nights-text">${selection.nights} nights</span>
+                            <span class="price">$${selection.total.toLocaleString()}</span>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="summary-line-item">
+                            <div class="summary-property-info">
+                                <span class="property-name-text">${dest.name}</span>
+                                <span class="room-type-text">Select room type</span>
+                            </div>
+                            <span class="nights-text"></span>
+                            <span class="price">&mdash;</span>
+                        </div>
+                    `;
+                }
+
+                // Check if there's an accepted stopover after this destination
+                const stopover = acceptedStopovers.find(s => s.afterDestinationIndex === index);
+                if (stopover) {
+                    html += `
+                        <div class="summary-line-item">
+                            <div class="summary-property-info">
+                                <span class="property-name-text">${stopover.name}</span>
+                            </div>
+                            <span class="nights-text">1 night</span>
+                            <span class="price complimentary" style="color: var(--success); font-style: normal;">Complimentary</span>
+                        </div>
+                    `;
+                }
+            });
+
+            if (total > 0) {
+                const discount = Math.round(total * 0.1);
+                const finalTotal = total - discount;
+
+                html += `
+                    <div class="summary-line-item discount">
+                        <span>Multi-destination discount (10%)</span>
+                        <span class="price">-$${discount.toLocaleString()}</span>
+                    </div>
+                    <div class="summary-line-item total">
+                        <span>Total</span>
+                        <span class="price">$${finalTotal.toLocaleString()}</span>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function updateStep3Continue() {
+            const btn = document.getElementById('step3ContinueBtn');
+            const allSelected = optimizedRoute.every(dest => roomSelections[dest.id]);
+
+            if (allSelected) {
+                btn.disabled = false;
+                btn.textContent = 'Make Payment';
+            } else {
+                btn.disabled = true;
+                const remaining = optimizedRoute.filter(d => !roomSelections[d.id]).length;
+                btn.textContent = `${remaining} selection${remaining > 1 ? 's' : ''} remaining`;
+            }
+        }
+
+        // =====================
+        // UTILITY FUNCTIONS
+        // =====================
+        function formatDateISO(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function formatDateShort(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr + 'T00:00:00');
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        function formatParty(party) {
+            const partyMap = {
+                '1': '1 Adult',
+                '2': '2 Adults',
+                '3': '3 Adults',
+                '4': '4 Adults',
+                '2+1': '2 Adults, 1 Child',
+                '2+2': '2 Adults, 2 Children'
+            };
+            return partyMap[party] || party;
+        }
+    </script>
+
+    <!-- Nights Change Modal -->
+    <div class="modal-overlay" id="routeConfirmModal">
+        <div class="modal-content" style="max-width: 560px; text-align: left;">
+            <h2 class="modal-title" style="text-align: center;">Review Your Route</h2>
+
+            <!-- Nights Change Section (shown conditionally) -->
+            <div id="nightsChangeSection" style="display: none; margin-bottom: var(--spacing-s);">
+                <p class="modal-message" style="margin-bottom: var(--spacing-xxs);">Your trip duration has changed:</p>
+                <div class="modal-highlight" id="modalNightsChange" style="margin-bottom: var(--spacing-xs);"></div>
+            </div>
+
+            <!-- Stopover Recommendation Section (shown conditionally) -->
+            <div id="stopoverSection" style="display: none;">
+                <div style="background: var(--warning); padding: var(--spacing-xs) var(--spacing-s);">
+                    <div style="font-family: var(--font-serif); font-size: var(--font-size-body-s); font-weight: 500; color: var(--charcoal);">Travel advisory based on your planned route</div>
+                </div>
+                <div style="background: rgba(29,29,29,0.03); padding: var(--spacing-s); margin-bottom: var(--spacing-s); border: 1px solid var(--border-color); border-top: none;">
+                    <div id="stopoverReasonText" style="font-size: var(--font-size-body-s); color: var(--charcoal); margin-bottom: var(--spacing-xs); line-height: 1.5;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: var(--spacing-xs); border-top: 1px solid var(--border-color);">
+                        <div>
+                            <div style="font-family: var(--font-serif); font-size: var(--font-size-body-s); color: var(--charcoal);">Park Hyatt Sydney</div>
+                            <div style="font-size: var(--font-size-body-xs); color: var(--neutral-60);" id="stopoverDatesText"></div>
+                        </div>
+                        <div style="font-family: var(--font-serif); color: var(--success); font-weight: 600;">Complimentary</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: var(--spacing-xs); margin-bottom: var(--spacing-xs);">
+                    <button class="modal-btn modal-btn-primary" style="flex: 1;" onclick="acceptStopoverAndProceed()">Accept Stopover</button>
+                    <button class="modal-btn modal-btn-secondary" style="flex: 1;" onclick="declineStopoverAndProceed()">No Thanks</button>
+                </div>
+                <div style="text-align: center;">
+                    <button style="background: none; border: none; color: var(--neutral-60); font-size: var(--font-size-body-xs); cursor: pointer; text-decoration: underline;" onclick="closeRouteModal()">← Adjust my route</button>
+                </div>
+            </div>
+
+            <!-- No Stopover Section (shown when no recommendation) -->
+            <div id="noStopoverSection" style="display: none;">
+                <p class="modal-message" style="text-align: center;">Your route looks good! No travel advisories for your planned journey.</p>
+            </div>
+
+            <div class="modal-actions" id="modalActions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeRouteModal()">Adjust Route</button>
+                <button class="modal-btn modal-btn-primary" id="proceedBtn" onclick="proceedToStep3()">Continue to Accommodations</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
