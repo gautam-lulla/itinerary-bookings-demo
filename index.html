@@ -535,7 +535,7 @@
             left: 0;
             right: 0;
             background: var(--limestone);
-            border-top: 1px solid var(--charcoal);
+            border-top: 1px solid var(--border-color);
             padding: var(--spacing-s) var(--spacing-s);
             z-index: 100;
             transform: translateY(100%);
@@ -2222,7 +2222,7 @@
                 continueBtn.disabled = true;
             } else if (minNightsNeeded > tripParams.duration) {
                 summaryText.innerHTML = `<strong>${count} destinations</strong> &bull; Min ${minNightsNeeded} nights required`;
-                buttonWarning.innerHTML = `&#9888; Need at least ${minNightsNeeded} nights (you have ${tripParams.duration})`;
+                buttonWarning.innerHTML = `Need at least ${minNightsNeeded} nights (you have ${tripParams.duration})`;
                 continueBtn.disabled = true;
             } else {
                 summaryText.innerHTML = `<strong>${count} destinations</strong> &bull; Min ${minNightsNeeded} nights required`;
