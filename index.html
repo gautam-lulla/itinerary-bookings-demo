@@ -197,6 +197,7 @@
             margin: 0 auto;
             line-height: 1.6;
             font-family: Helvetica, sans-serif;
+            min-height: 58px; /* 2 lines: 18px * 1.6 line-height * 2 */
         }
 
         /* Trip Parameters - Dark bar at top */
@@ -458,8 +459,8 @@
 
         .selection-indicator::after {
             content: '';
-            width: 12px;
-            height: 12px;
+            width: 18px;
+            height: 18px;
             background: transparent;
             transition: background 0.2s ease;
         }
