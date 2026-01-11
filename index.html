@@ -448,17 +448,12 @@
             right: var(--spacing-xs);
             width: 28px;
             height: 28px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid var(--charcoal);
+            background: var(--limestone);
+            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
-        }
-
-        .destination-card.selected .selection-indicator {
-            background: rgba(255, 255, 255, 0.9);
-            border-color: var(--charcoal);
         }
 
         .selection-indicator::after {
@@ -470,7 +465,7 @@
         }
 
         .destination-card.selected .selection-indicator::after {
-            background: var(--charcoal);
+            background: var(--vineyard-burgundy);
         }
 
         .destination-content {
