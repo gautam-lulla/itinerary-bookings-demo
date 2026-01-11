@@ -473,10 +473,10 @@
             position: absolute;
             top: var(--spacing-xs);
             right: var(--spacing-xs);
-            width: 28px;
-            height: 28px;
-            background: var(--limestone);
-            border: none;
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: 1px solid var(--charcoal);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -485,14 +485,18 @@
 
         .selection-indicator::after {
             content: '';
-            width: 18px;
-            height: 18px;
+            width: 12px;
+            height: 12px;
             background: transparent;
             transition: background 0.2s ease;
         }
 
         .destination-card.selected .selection-indicator::after {
-            background: var(--vineyard-burgundy);
+            background: var(--charcoal);
+        }
+
+        .destination-card:hover .selection-indicator {
+            border: 2px solid var(--vineyard-burgundy);
         }
 
         .destination-content {
