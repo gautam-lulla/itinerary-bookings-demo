@@ -1550,24 +1550,38 @@
         }
 
         .nights-btn-inline {
-            width: 22px;
-            height: 22px;
-            border: 1px solid var(--border-color);
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--charcoal);
             background: transparent;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            color: var(--charcoal);
             transition: all 0.2s;
-            font-family: Helvetica, sans-serif;
+        }
+
+        .nights-btn-inline::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-left: 1.5px solid var(--charcoal);
+            border-bottom: 1.5px solid var(--charcoal);
+            transform: rotate(135deg);
+            margin-top: 3px;
+        }
+
+        .nights-btn-inline.down::after {
+            transform: rotate(-45deg);
+            margin-top: -3px;
         }
 
         .nights-btn-inline:hover:not(:disabled) {
             background: var(--charcoal);
-            color: var(--limestone);
-            border-color: var(--charcoal);
+        }
+
+        .nights-btn-inline:hover:not(:disabled)::after {
+            border-color: var(--limestone);
         }
 
         .nights-btn-inline:disabled {
@@ -2398,9 +2412,9 @@
                                 </div>
                                 <div class="detail-item nights-editable">
                                     <span class="detail-label">Nights:</span>
-                                    <button class="nights-btn-inline" onclick="adjustNights(${index}, -1)" ${dest.nights <= dest.minStay ? 'disabled' : ''}>−</button>
+                                    <button class="nights-btn-inline down" onclick="adjustNights(${index}, -1)" ${dest.nights <= dest.minStay ? 'disabled' : ''}></button>
                                     <span class="nights-value-inline">${dest.nights}</span>
-                                    <button class="nights-btn-inline" onclick="adjustNights(${index}, 1)">+</button>
+                                    <button class="nights-btn-inline" onclick="adjustNights(${index}, 1)"></button>
                                 </div>
                                 <div class="detail-item">
                                     <span class="detail-label">Guests:</span> ${formatParty(tripParams.party)}
