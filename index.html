@@ -143,6 +143,13 @@
             width: auto;
         }
 
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--spacing-xs);
+        }
+
         .progress-indicator {
             display: flex;
             align-items: center;
@@ -729,7 +736,7 @@
         .analysis-header-top {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end;
         }
 
         .analysis-title {
@@ -738,6 +745,25 @@
             color: var(--charcoal);
             font-weight: 400;
             letter-spacing: -0.48px;
+        }
+
+        .change-start-date-inline {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xxs);
+        }
+
+        .change-start-date-inline .param-label {
+            font-size: 11px;
+        }
+
+        .date-input-small {
+            width: 240px;
+        }
+
+        .date-input-small .date-display {
+            height: 48px;
+            font-size: 14px;
         }
 
         .mini-stats {
@@ -1598,6 +1624,61 @@
             text-align: center;
         }
 
+        /* AI Toggle */
+        .ai-toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: Helvetica, sans-serif;
+            font-size: 11px;
+            color: var(--neutral-60);
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .ai-toggle-container:hover {
+            opacity: 1;
+        }
+
+        .ai-toggle-container.hidden {
+            display: none;
+        }
+
+        .ai-toggle-label {
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ai-toggle {
+            position: relative;
+            width: 36px;
+            height: 20px;
+            background: var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ai-toggle.active {
+            background: var(--vineyard-burgundy);
+        }
+
+        .ai-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: var(--limestone);
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .ai-toggle.active::after {
+            transform: translateX(16px);
+        }
+
         /* Modal Styles */
         .modal-overlay {
             position: fixed;
@@ -1805,22 +1886,29 @@
                     <path d="M94.5297 60.751C89.0113 60.751 83.8016 62.777 79.7496 66.472C83.8016 70.1671 89.0113 72.1931 94.5297 72.1931C100.048 72.1931 105.258 70.1671 109.31 66.472C105.258 62.777 100.048 60.751 94.5297 60.751Z" fill="#1D1D1D"/>
                 </svg>
             </div>
-            <div class="progress-indicator">
-                <div class="step active" id="stepIndicator1" onclick="canNavigateTo(1) && goToStep(1)">
-                    <div class="step-number">1</div>
-                    <span>Dream</span>
+            <div class="header-right">
+                <!-- AI Toggle -->
+                <div class="ai-toggle-container" id="aiToggleContainer">
+                    <span class="ai-toggle-label">AI Route Optimizer</span>
+                    <div class="ai-toggle active" id="aiToggle" onclick="toggleAI()"></div>
                 </div>
-                <div class="step" id="stepIndicator2" onclick="canNavigateTo(2) && goToStep(2)">
-                    <div class="step-number">2</div>
-                    <span>Plan</span>
-                </div>
-                <div class="step" id="stepIndicator3" onclick="canNavigateTo(3) && goToStep(3)">
-                    <div class="step-number">3</div>
-                    <span>Select</span>
-                </div>
-                <div class="step" id="stepIndicator4">
-                    <div class="step-number">4</div>
-                    <span>Payment</span>
+                <div class="progress-indicator">
+                    <div class="step active" id="stepIndicator1" onclick="canNavigateTo(1) && goToStep(1)">
+                        <div class="step-number">1</div>
+                        <span>Dream</span>
+                    </div>
+                    <div class="step" id="stepIndicator2" onclick="canNavigateTo(2) && goToStep(2)">
+                        <div class="step-number">2</div>
+                        <span>Plan</span>
+                    </div>
+                    <div class="step" id="stepIndicator3" onclick="canNavigateTo(3) && goToStep(3)">
+                        <div class="step-number">3</div>
+                        <span>Select</span>
+                    </div>
+                    <div class="step" id="stepIndicator4">
+                        <div class="step-number">4</div>
+                        <span>Payment</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1919,6 +2007,13 @@
                 <div class="analysis-header">
                     <div class="analysis-header-top">
                         <div class="analysis-title">Your Planned Journey</div>
+                        <div class="change-start-date-inline">
+                            <div class="param-label">Change Your Start Date</div>
+                            <div class="date-input-wrapper date-input-small">
+                                <input type="date" class="param-input" id="step2StartDate" onchange="applyNewStartDate(this.value)">
+                                <div class="date-display" id="step2DateDisplay">Select date</div>
+                            </div>
+                        </div>
                         <div class="mini-stats" id="miniStats">
                             <!-- Mini stats populated by JS -->
                         </div>
@@ -2136,6 +2231,7 @@
         // STATE
         // =====================
         let selectedDestinations = [];
+        let aiEnabled = true;
         let tripParams = {
             startDate: '',
             duration: 10,
@@ -2150,6 +2246,15 @@
         // Stopover recommendation state
         let predeterminedStopover = null;
         let acceptedStopovers = [];
+
+        // =====================
+        // AI TOGGLE
+        // =====================
+        function toggleAI() {
+            aiEnabled = !aiEnabled;
+            const toggle = document.getElementById('aiToggle');
+            toggle.classList.toggle('active', aiEnabled);
+        }
 
         // =====================
         // INITIALIZATION
@@ -2323,6 +2428,12 @@
 
             currentStep = stepNum;
 
+            // Show/hide AI toggle (only visible on Step 1)
+            const aiToggleContainer = document.getElementById('aiToggleContainer');
+            if (aiToggleContainer) {
+                aiToggleContainer.classList.toggle('hidden', stepNum !== 1);
+            }
+
             // Render step-specific content
             if (stepNum === 2) {
                 renderStep2();
@@ -2361,6 +2472,32 @@
             const destNights = optimizedRoute.reduce((sum, dest) => sum + dest.nights, 0);
             const stopoverNights = acceptedStopovers.length; // 1 night per stopover
             const totalNights = destNights + stopoverNights;
+
+            // Initialize the start date picker
+            const startDateInput = document.getElementById('step2StartDate');
+            const step2DateDisplay = document.getElementById('step2DateDisplay');
+            if (startDateInput) {
+                // Handle both Date objects and string dates
+                let dateStr;
+                if (tripParams.startDate instanceof Date) {
+                    dateStr = formatDateISO(tripParams.startDate);
+                } else {
+                    dateStr = tripParams.startDate;
+                }
+
+                startDateInput.value = dateStr;
+                startDateInput.min = formatDateISO(new Date());
+
+                // Update the date display - parse as local time
+                if (step2DateDisplay) {
+                    const displayDate = new Date(dateStr + 'T00:00:00');
+                    step2DateDisplay.textContent = displayDate.toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                }
+            }
 
             // Render mini stats in header
             document.getElementById('miniStats').innerHTML = `
@@ -2463,7 +2600,15 @@
         }
 
         function recalculateRouteDates() {
-            let currentDate = new Date(tripParams.startDate + 'T00:00:00');
+            // Handle both Date objects and string dates
+            let dateStr;
+            if (tripParams.startDate instanceof Date) {
+                dateStr = formatDateISO(tripParams.startDate);
+            } else {
+                dateStr = tripParams.startDate;
+            }
+
+            let currentDate = new Date(dateStr + 'T00:00:00');
             optimizedRoute.forEach(dest => {
                 dest.checkIn = formatDateISO(currentDate);
                 currentDate.setDate(currentDate.getDate() + dest.nights);
@@ -2502,6 +2647,13 @@
             // Calculate stopover recommendation based on current route
             calculatePredeterminedStopover();
 
+            // If AI is disabled and no nights changed, skip the modal entirely
+            if (!aiEnabled && !nightsChanged) {
+                tripParams.duration = totalNights;
+                goToStep(3);
+                return;
+            }
+
             // Show the route confirmation modal
             const modal = document.getElementById('routeConfirmModal');
             const nightsSection = document.getElementById('nightsChangeSection');
@@ -2518,8 +2670,8 @@
                 nightsSection.style.display = 'none';
             }
 
-            // Show/hide stopover recommendation
-            if (predeterminedStopover) {
+            // Show/hide stopover recommendation (only if AI is enabled)
+            if (predeterminedStopover && aiEnabled) {
                 stopoverSection.style.display = 'block';
                 noStopoverSection.style.display = 'none';
                 modalActions.style.display = 'none'; // Hide default actions when stopover shown
@@ -2529,11 +2681,48 @@
                     `${formatDateShort(predeterminedStopover.checkIn)} - ${formatDateShort(predeterminedStopover.checkOut)} • 1 night`;
             } else {
                 stopoverSection.style.display = 'none';
-                noStopoverSection.style.display = 'block';
+                noStopoverSection.style.display = aiEnabled ? 'block' : 'none';
                 modalActions.style.display = 'flex'; // Show default actions
             }
 
             modal.classList.add('active');
+        }
+
+        function applyNewStartDate(dateValue) {
+            if (!dateValue) return;
+
+            // Parse date as local time (not UTC) by adding T00:00:00
+            const newStartDate = new Date(dateValue + 'T00:00:00');
+
+            if (isNaN(newStartDate.getTime())) {
+                return;
+            }
+
+            // Update tripParams start date (store as ISO string to avoid timezone issues)
+            tripParams.startDate = dateValue;
+
+            // Recalculate all destination dates based on new start date
+            recalculateDatesFromStart();
+
+            // Re-render Step 2
+            renderStep2();
+        }
+
+        function recalculateDatesFromStart() {
+            // Handle both Date objects and string dates
+            let dateStr;
+            if (tripParams.startDate instanceof Date) {
+                dateStr = formatDateISO(tripParams.startDate);
+            } else {
+                dateStr = tripParams.startDate;
+            }
+
+            let currentDate = new Date(dateStr + 'T00:00:00');
+            optimizedRoute.forEach(dest => {
+                dest.checkIn = formatDateISO(currentDate);
+                currentDate.setDate(currentDate.getDate() + dest.nights);
+                dest.checkOut = formatDateISO(currentDate);
+            });
         }
 
         function closeRouteModal() {
@@ -2585,6 +2774,12 @@
         // STOPOVER RECOMMENDATIONS
         // =====================
         function calculatePredeterminedStopover() {
+            // Skip if AI is disabled
+            if (!aiEnabled) {
+                predeterminedStopover = null;
+                return;
+            }
+
             // Need at least 2 destinations for a stopover
             if (optimizedRoute.length < 2) {
                 predeterminedStopover = null;
@@ -3008,12 +3203,21 @@
         // UTILITY FUNCTIONS
         // =====================
         function formatDateISO(date) {
-            return date.toISOString().split('T')[0];
+            // Use local date to avoid timezone shifts
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
-        function formatDateShort(dateStr) {
-            if (!dateStr) return '';
-            const date = new Date(dateStr + 'T00:00:00');
+        function formatDateShort(dateInput) {
+            if (!dateInput) return '';
+            let date;
+            if (dateInput instanceof Date) {
+                date = dateInput;
+            } else {
+                date = new Date(dateInput + 'T00:00:00');
+            }
             return date.toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
